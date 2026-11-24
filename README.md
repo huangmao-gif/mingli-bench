@@ -53,5 +53,5 @@ Python · 多模型 API 调用 · 结构化 JSON 校验 · 固定随机种子 ·
 
 ## 相关项目
 
-- **命理鉴心**（主产品）：https://minglijinxin.com — 商业化 AI 人格分析与付费问答平台，Next.js 14 + TypeScript + Node/Express + DeepSeek API，微信支付 V3 全链路，真实付费订单 47 笔 / 营收 ¥5,504。
+- **命理鉴心**（主产品）：https://minglijinxin.com — 商业化 AI 人格分析与付费问答平台，Next.js + TypeScript + Node/Express + DeepSeek API，微信支付 V3 真实下单全链路跑通。
 - **作者**：麻嘉诺（2028 届 · 上海杉达学院 · 国际经济与贸易）
