@@ -45,3 +45,8 @@ test('否定语境、流年/今年语境跳过；并列星的四化归属任一�
   assert.deepEqual(verdicts('流年子女宫逢紫微。'), []);
   assert.deepEqual(verdicts('太阴天梁化科给你口碑。'), ['mutagen:天梁化科:true']);
 });
+
+test('「2026丙年」「丙午年」也算流年语境', () => {
+  assert.deepEqual(verdicts('2026丙年太阳化忌。'), []);
+  assert.deepEqual(verdicts('丙午年廉贞化忌。'), []);
+});
