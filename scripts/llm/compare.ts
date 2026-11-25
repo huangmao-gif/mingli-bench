@@ -6,6 +6,7 @@ import { extractClaims } from '../../src/citation.ts';
 import { CHARTS } from './charts.ts';
 
 const models = process.argv.slice(2);
+const REF_DATE = '2026-6-1'; // 提示词给出的「当前年份 2026」，用于核对大限、流年四化
 const short = (n: string) => n.split('·')[0];
 const pct = (a: number, b: number) => (b ? `${((100 * a) / b).toFixed(0)}%（${a}/${b}）` : '—');
 
@@ -19,7 +20,7 @@ for (const model of models) {
     const f = `results/llm/raw/${model}/${c.id}-baseline-1.json`;
     if (!existsSync(f)) continue;
     const text: string = JSON.parse(readFileSync(f, 'utf8')).content;
-    const chart = chartBySolar(c.date, c.hour, c.gender);
+    const chart = chartBySolar(c.date, c.hour, c.gender, REF_DATE);
     const eng = computeProfile(chart);
     r.n++;
     const body = text.replace(/<!--(SCORES|CARD):.*?-->/gs, '').trim();
@@ -46,7 +47,7 @@ for (const model of models) {
     if (scores) for (const d of SCORE_DIMS) { r.scoreN++; const df = Math.abs(scores[d] - eng.scores[d]); r.diffSum += df; if (df === 0) r.scoreExact++; }
     for (const cl of extractClaims(chart, body)) {
       r.claims++;
-      if (!cl.ok) { r.wrong++; const i = body.indexOf(cl.text); wrongList.push(`- **${model} ${c.id}** \`${cl.kind}\` 「${cl.text}」：${cl.reason}　…${body.slice(Math.max(0, i - 25), i + cl.text.length + 25).replace(/\n/g, ' ')}…`); }
+      if (!cl.ok) { r.wrong++; const i = cl.at; wrongList.push(`- **${model} ${c.id}** \`${cl.kind}\` 「${cl.text}」：${cl.reason}　…${body.slice(Math.max(0, i - 25), i + cl.text.length + 25).replace(/\n/g, ' ')}…`); }
     }
   }
   rows.push(r);

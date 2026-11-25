@@ -27,8 +27,19 @@ export interface Palace {
   stars: Star[];
 }
 
+/** 某一层四化（大限 / 流年）：禄权科忌分别落在哪颗星 */
+export interface MutagenLayer {
+  label: string;
+  stem: string;
+  stars: Record<Mutagen, string>;
+}
+
 export interface Chart {
   palaces: Palace[];
+  /** 参考时点的大限、流年四化（可选；引用校验用来核对非生年的四化陈述） */
+  layers?: MutagenLayer[];
+  /** 十天干四化表（取自排盘库），用于核对写明了年份/天干的四化陈述 */
+  stemTable?: Record<string, Record<Mutagen, string>>;
 }
 
 export const SCORE_DIMS = [

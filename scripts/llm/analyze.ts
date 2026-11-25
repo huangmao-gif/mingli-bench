@@ -44,7 +44,7 @@ function parseMarkers(text: string) {
 const engineOf = new Map<string, ReturnType<typeof computeProfile>>();
 const chartOf = new Map<string, ReturnType<typeof chartBySolar>>();
 for (const r of raws) if (!engineOf.has(r.chart.id)) {
-  const c = chartBySolar(r.chart.date, r.chart.hour, r.chart.gender);
+  const c = chartBySolar(r.chart.date, r.chart.hour, r.chart.gender, '2026-6-1');
   chartOf.set(r.chart.id, c);
   engineOf.set(r.chart.id, computeProfile(c));
 }
@@ -152,7 +152,7 @@ for (const r of raws) {
     k.n++;
     if (!c.ok) {
       k.wrong++;
-      const i = body.indexOf(c.text);
+      const i = c.at;
       flagged.push(`- **${r.chart.id}-${r.cond}-${r.run}** \`${c.kind}\` 「${c.text}」：${c.reason}　…${body.slice(Math.max(0, i - 25), i + c.text.length + 25).replace(/\n/g, ' ')}…`);
     }
   }
@@ -190,7 +190,7 @@ out.push(`| 正文提到引擎给出的人物 | ${pct(mentions, eng.length)} |`)
 out.push(`| 正文提到其他人物（可能是改人物，也可能只是对比，需人工看） | ${pct(otherPersona, eng.length)} |`);
 out.push(`| 违规输出 SCORES/CARD 标记 | ${pct(leaked, eng.length)} |`, '');
 out.push('## 3. 引用校验：正文里的盘面陈述是否与命盘一致', '', '| 陈述类型 | baseline 错误率 | engine 错误率 |', '|---|---|---|');
-const KIND_CN: Record<string, string> = { 'star-in-palace': '某星在某宫', mutagen: '生年四化', brightness: '星曜亮度' };
+const KIND_CN: Record<string, string> = { 'star-in-palace': '某星在某宫', mutagen: '四化（生年/大限/流年）', brightness: '星曜亮度' };
 for (const k of ['star-in-palace', 'mutagen', 'brightness']) {
   const x = citation.baseline?.[k] ?? { n: 0, wrong: 0 }, y = citation.engine?.[k] ?? { n: 0, wrong: 0 };
   out.push(`| ${KIND_CN[k]} | ${pct(x.wrong, x.n)}（${x.wrong}/${x.n}） | ${pct(y.wrong, y.n)}（${y.wrong}/${y.n}） |`);

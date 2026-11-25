@@ -1,6 +1,6 @@
 // 引用校验：从 LLM 报告正文里抽出可核对的盘面陈述，与命盘逐条比对。
 // 这是基于正则的启发式抽取，有漏抽也可能误判；评测时会人工抽查被判错的陈述来估计精度。
-import type { Chart, PalaceName } from './types.ts';
+import type { Chart, Mutagen, PalaceName } from './types.ts';
 import { opposite, palace } from './chart.ts';
 
 export const STARS = [
@@ -25,11 +25,15 @@ export interface Claim {
   value?: string;
   ok: boolean;
   reason: string;
+  /** 陈述在正文中的位置 */
+  at: number;
 }
 
-/** 非本命语境：所在分句出现这些词时，陈述可能指流年/大限/飞化/假设，不按本命盘核对 */
+/** 非本命语境（用于「星在宫」）：所在分句出现这些词时，陈述可能指流年/大限的宫位，不按本命盘核对 */
 const NON_NATAL = /(流年|流月|大限|小限|飞|宫干|自化|若|如果|假如|行运|今年|明年|当年|年内|20\d\d|[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]?年)/;
 /** 否定语境：「贪狼化禄未成」「并无太阳化忌」 */
+/** 四化陈述只在这些语境下跳过（飞化、流月、假设无法核对）；流年、大限四化改为直接核对 */
+const UNCHECKABLE_MUTAGEN = /(流月|流日|飞|宫干|自化|若|如果|假如)/;
 const NEGATED_AFTER = /^.{0,4}(未|不成|不满足|条件)/u;
 const NEGATED_BEFORE = /(无|非|未|没有|并非|缺)$/u;
 
@@ -37,6 +41,18 @@ function clauseAround(text: string, idx: number): string {
   const start = Math.max(text.lastIndexOf('。', idx), text.lastIndexOf('\n', idx), text.lastIndexOf('；', idx)) + 1;
   const ends = ['。', '\n', '；'].map((c) => text.indexOf(c, idx)).filter((x) => x >= 0);
   return text.slice(start, ends.length ? Math.min(...ends) : text.length);
+}
+
+const STEMS = '甲乙丙丁戊己庚辛壬癸';
+/** 本段（上一个换行之后）中、陈述之前最近一次写明的年份或天干：「2027年」「丁未年」「丁干」 */
+function explicitStem(text: string, idx: number): string | null {
+  const para = text.slice(text.lastIndexOf('\n', idx) + 1, idx);
+  let last: { at: number; stem: string } | null = null;
+  for (const m of para.matchAll(/(20\d\d)年?|([甲乙丙丁戊己庚辛壬癸])(?:[子丑寅卯辰巳午未申酉戌亥]年|年|干)/gu)) {
+    const stem = m[1] ? STEMS[(Number(m[1]) - 4) % 10] : m[2];
+    last = { at: m.index!, stem };
+  }
+  return last?.stem ?? null;
 }
 
 function isNegated(text: string, idx: number, len: number): boolean {
@@ -50,7 +66,8 @@ function starIn(chart: Chart, star: string, p: PalaceName): boolean {
 export function extractClaims(chart: Chart, text: string): Claim[] {
   const claims: Claim[] = [];
   const seen = new Set<string>();
-  const push = (c: Claim, at: number) => {
+  const push = (c0: Omit<Claim, 'at'>, at: number) => {
+    const c: Claim = { ...c0, at };
     const key = `${c.kind}|${c.star}|${c.palace ?? ''}|${c.value ?? ''}|${at}`;
     if (!seen.has(key)) { seen.add(key); claims.push(c); }
   };
@@ -75,18 +92,32 @@ export function extractClaims(chart: Chart, text: string): Claim[] {
     }
   }
 
-  // 2) 生年四化：「太阴化科」
+  // 2) 四化：先对生年四化，再对参考时点的大限、流年四化（chart.layers）
   const mutRe = new RegExp(`(${S})化(禄|权|科|忌)`, 'gu');
+  const all = chart.palaces.flatMap((p) => p.stars);
   for (let m; (m = mutRe.exec(text)); ) {
-    if (NON_NATAL.test(clauseAround(text, m.index)) || isNegated(text, m.index, m[0].length)) continue;
+    if (UNCHECKABLE_MUTAGEN.test(clauseAround(text, m.index)) || isNegated(text, m.index, m[0].length)) continue;
     const star = m[1];
-    const all = chart.palaces.flatMap((p) => p.stars);
-    const hit = all.find((s) => s.name === star);
+    const mut = m[2] as Mutagen;
     // 「太阳天梁化禄」：紧挨着的前一颗星也可能是四化的主人
     const prev = STARS.find((n) => text.slice(0, m!.index).endsWith(n));
-    const prevHit = prev ? all.find((s) => s.name === prev) : undefined;
-    const ok = hit?.mutagen === m[2] || prevHit?.mutagen === m[2];
-    push({ kind: 'mutagen', text: m[0], star, value: m[2], ok, reason: ok ? '生年四化一致' : `生年四化为${hit?.mutagen ?? '无'}` }, m.index);
+    const owners = prev ? [star, prev] : [star];
+    let reason = '';
+    const stem = explicitStem(text, m.index);
+    if (owners.some((o) => all.find((s) => s.name === o)?.mutagen === mut)) reason = '生年四化一致';
+    else if (stem && chart.stemTable?.[stem] && owners.includes(chart.stemTable[stem][mut])) reason = `${stem}干四化一致（文中写明）`;
+    else {
+      const hit = (chart.layers ?? []).find((l) => owners.includes(l.stars[mut]));
+      if (hit) reason = `${hit.label}四化一致（${hit.stem}干）`;
+    }
+    const ok = reason !== '';
+    if (!ok) {
+      const natal = all.find((s) => s.name === star)?.mutagen ?? '无';
+      const layerDesc = (chart.layers ?? []).map((l) => `${l.label}${l.stem}干化${mut}为${l.stars[mut]}`).join('，');
+      const stemDesc = stem && chart.stemTable?.[stem] ? `；文中所指${stem}干化${mut}为${chart.stemTable[stem][mut]}` : '';
+      reason = `生年四化为${natal}${layerDesc ? '；' + layerDesc : ''}${stemDesc}`;
+    }
+    push({ kind: 'mutagen', text: m[0], star, value: mut, ok, reason }, m.index);
   }
 
   // 3) 亮度：「紫微庙」「文曲落陷」（只核对盘上有亮度标注的星）

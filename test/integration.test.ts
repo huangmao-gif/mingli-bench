@@ -62,3 +62,11 @@ test('刘备规则不可满足：紫微与太阴/天同的位置差恒为奇数�
       assert.notEqual(evaluatePersona(c, liubei).unmatched.length, 0);
     }
 });
+
+test('参考时点四化：1973-2-27 巳时女，2026 年走甲干大限、丙年流年', () => {
+  const c = chartBySolar('1973-2-27', 5, '女', '2026-6-1');
+  assert.deepEqual(c.layers, [
+    { label: '大限', stem: '甲', stars: { 禄: '廉贞', 权: '破军', 科: '武曲', 忌: '太阳' } },
+    { label: '流年', stem: '丙', stars: { 禄: '天同', 权: '天机', 科: '文昌', 忌: '廉贞' } },
+  ]);
+});
