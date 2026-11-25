@@ -226,5 +226,223 @@
       1003,
       1
     ]
+  },
+  "v2": {
+    "topPersonaFullMatchRate": 0.33870370370370373,
+    "topPersonaCoreMatchRate": 0.8500925925925926,
+    "personas": [
+      {
+        "id": 1,
+        "name": "诸葛亮·天机",
+        "chosen": 206,
+        "coreAnywhere": 474,
+        "fullAnywhere": 70
+      },
+      {
+        "id": 2,
+        "name": "曹操·枭雄",
+        "chosen": 2371,
+        "coreAnywhere": 5990,
+        "fullAnywhere": 768
+      },
+      {
+        "id": 3,
+        "name": "关羽·武曲",
+        "chosen": 1239,
+        "coreAnywhere": 4323,
+        "fullAnywhere": 735
+      },
+      {
+        "id": 4,
+        "name": "司马懿·潜伏",
+        "chosen": 2367,
+        "coreAnywhere": 4009,
+        "fullAnywhere": 575
+      },
+      {
+        "id": 5,
+        "name": "周瑜·风流",
+        "chosen": 232,
+        "coreAnywhere": 1005,
+        "fullAnywhere": 160
+      },
+      {
+        "id": 6,
+        "name": "赵云·将星",
+        "chosen": 902,
+        "coreAnywhere": 3617,
+        "fullAnywhere": 159
+      },
+      {
+        "id": 7,
+        "name": "刘备·仁德",
+        "chosen": 676,
+        "coreAnywhere": 271,
+        "fullAnywhere": 235
+      },
+      {
+        "id": 8,
+        "name": "吕布·贪狼",
+        "chosen": 234,
+        "coreAnywhere": 334,
+        "fullAnywhere": 66
+      },
+      {
+        "id": 9,
+        "name": "张飞·烈刃",
+        "chosen": 1716,
+        "coreAnywhere": 5387,
+        "fullAnywhere": 2156
+      },
+      {
+        "id": 10,
+        "name": "郭嘉·天妒",
+        "chosen": 255,
+        "coreAnywhere": 159,
+        "fullAnywhere": 20
+      },
+      {
+        "id": 11,
+        "name": "孙权·守成",
+        "chosen": 160,
+        "coreAnywhere": 550,
+        "fullAnywhere": 412
+      },
+      {
+        "id": 12,
+        "name": "贾诩·窥心",
+        "chosen": 1435,
+        "coreAnywhere": 1602,
+        "fullAnywhere": 206
+      },
+      {
+        "id": 13,
+        "name": "孙策·霸王",
+        "chosen": 151,
+        "coreAnywhere": 434,
+        "fullAnywhere": 129
+      },
+      {
+        "id": 14,
+        "name": "荀彧·天梁",
+        "chosen": 455,
+        "coreAnywhere": 583,
+        "fullAnywhere": 84
+      },
+      {
+        "id": 15,
+        "name": "鲁肃·厚德",
+        "chosen": 1742,
+        "coreAnywhere": 5399,
+        "fullAnywhere": 471
+      },
+      {
+        "id": 16,
+        "name": "黄忠·廉贞",
+        "chosen": 844,
+        "coreAnywhere": 6588,
+        "fullAnywhere": 1100
+      },
+      {
+        "id": 17,
+        "name": "姜维·孤忠",
+        "chosen": 1020,
+        "coreAnywhere": 1617,
+        "fullAnywhere": 287
+      },
+      {
+        "id": 18,
+        "name": "魏延·反骨",
+        "chosen": 343,
+        "coreAnywhere": 1113,
+        "fullAnywhere": 1113
+      },
+      {
+        "id": 19,
+        "name": "庞统·凤雏",
+        "chosen": 997,
+        "coreAnywhere": 786,
+        "fullAnywhere": 214
+      },
+      {
+        "id": 20,
+        "name": "陈宫·择主",
+        "chosen": 1145,
+        "coreAnywhere": 1599,
+        "fullAnywhere": 291
+      },
+      {
+        "id": 21,
+        "name": "徐庶·孝义",
+        "chosen": 1268,
+        "coreAnywhere": 1586,
+        "fullAnywhere": 248
+      },
+      {
+        "id": 22,
+        "name": "张辽·止啼",
+        "chosen": 224,
+        "coreAnywhere": 2174,
+        "fullAnywhere": 234
+      },
+      {
+        "id": 23,
+        "name": "甘宁·先锋",
+        "chosen": 595,
+        "coreAnywhere": 812,
+        "fullAnywhere": 190
+      },
+      {
+        "id": 24,
+        "name": "荀攸·隐策",
+        "chosen": 1023,
+        "coreAnywhere": 1641,
+        "fullAnywhere": 23
+      }
+    ],
+    "scoreHistogram": {
+      "自我觉察": [
+        243,
+        2898,
+        11243,
+        5838,
+        1378
+      ],
+      "情绪调节": [
+        1257,
+        4964,
+        6034,
+        5367,
+        3978
+      ],
+      "延迟满足": [
+        30,
+        2363,
+        12797,
+        5669,
+        741
+      ],
+      "关系模式": [
+        21,
+        1728,
+        13984,
+        5320,
+        547
+      ],
+      "不确定性容忍": [
+        1217,
+        4880,
+        6180,
+        5225,
+        4098
+      ],
+      "自我叙事": [
+        101,
+        2531,
+        12469,
+        5690,
+        809
+      ]
+    }
   }
 }
