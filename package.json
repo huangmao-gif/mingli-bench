@@ -1,0 +1,17 @@
+{
+  "name": "mingli-bench",
+  "version": "0.1.0",
+  "private": true,
+  "description": "命理鉴心：紫微斗数六维分与人物匹配的确定性引擎、测试与分布评测",
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.ts\"",
+    "simulate": "node scripts/simulate.ts"
+  },
+  "repository": { "type": "git", "url": "git+https://github.com/huangmao-gif/mingli-bench.git" },
+  "license": "CC-BY-NC-4.0",
+  "dependencies": {
+    "iztro": "2.5.8"
+  }
+}

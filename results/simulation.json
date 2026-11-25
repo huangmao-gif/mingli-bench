@@ -1,0 +1,230 @@
+{
+  "sample": {
+    "charts": 21600,
+    "years": "1960-2009",
+    "days": [
+      1,
+      11,
+      21
+    ],
+    "hours": 12,
+    "gender": "女",
+    "iztro": "2.5.8"
+  },
+  "topPersonaFullMatchRate": 0.3288888888888889,
+  "meanTopMatchRatio": 0.8059743981480781,
+  "personas": [
+    {
+      "id": 1,
+      "name": "诸葛亮·天机",
+      "chosen": 524,
+      "fullMatchAnywhere": 70,
+      "colocationPossible": 259
+    },
+    {
+      "id": 2,
+      "name": "曹操·枭雄",
+      "chosen": 1643,
+      "fullMatchAnywhere": 768,
+      "colocationPossible": 626
+    },
+    {
+      "id": 3,
+      "name": "关羽·武曲",
+      "chosen": 1018,
+      "fullMatchAnywhere": 735,
+      "colocationPossible": 574
+    },
+    {
+      "id": 4,
+      "name": "司马懿·潜伏",
+      "chosen": 2310,
+      "fullMatchAnywhere": 575,
+      "colocationPossible": 546
+    },
+    {
+      "id": 5,
+      "name": "周瑜·风流",
+      "chosen": 150,
+      "fullMatchAnywhere": 160,
+      "colocationPossible": 308
+    },
+    {
+      "id": 6,
+      "name": "赵云·将星",
+      "chosen": 1116,
+      "fullMatchAnywhere": 159,
+      "colocationPossible": 0
+    },
+    {
+      "id": 7,
+      "name": "刘备·仁德",
+      "chosen": 308,
+      "fullMatchAnywhere": 0,
+      "colocationPossible": 0
+    },
+    {
+      "id": 8,
+      "name": "吕布·贪狼",
+      "chosen": 1132,
+      "fullMatchAnywhere": 66,
+      "colocationPossible": 302
+    },
+    {
+      "id": 9,
+      "name": "张飞·烈刃",
+      "chosen": 2028,
+      "fullMatchAnywhere": 2156,
+      "colocationPossible": 515
+    },
+    {
+      "id": 10,
+      "name": "郭嘉·天妒",
+      "chosen": 306,
+      "fullMatchAnywhere": 20,
+      "colocationPossible": 20
+    },
+    {
+      "id": 11,
+      "name": "孙权·守成",
+      "chosen": 224,
+      "fullMatchAnywhere": 412,
+      "colocationPossible": 318
+    },
+    {
+      "id": 12,
+      "name": "贾诩·窥心",
+      "chosen": 1064,
+      "fullMatchAnywhere": 206,
+      "colocationPossible": 0
+    },
+    {
+      "id": 13,
+      "name": "孙策·霸王",
+      "chosen": 414,
+      "fullMatchAnywhere": 129,
+      "colocationPossible": 0
+    },
+    {
+      "id": 14,
+      "name": "荀彧·天梁",
+      "chosen": 317,
+      "fullMatchAnywhere": 84,
+      "colocationPossible": 130
+    },
+    {
+      "id": 15,
+      "name": "鲁肃·厚德",
+      "chosen": 987,
+      "fullMatchAnywhere": 471,
+      "colocationPossible": 0
+    },
+    {
+      "id": 16,
+      "name": "黄忠·廉贞",
+      "chosen": 738,
+      "fullMatchAnywhere": 1100,
+      "colocationPossible": 289
+    },
+    {
+      "id": 17,
+      "name": "姜维·孤忠",
+      "chosen": 1411,
+      "fullMatchAnywhere": 287,
+      "colocationPossible": 21
+    },
+    {
+      "id": 18,
+      "name": "魏延·反骨",
+      "chosen": 334,
+      "fullMatchAnywhere": 1113,
+      "colocationPossible": 325
+    },
+    {
+      "id": 19,
+      "name": "庞统·凤雏",
+      "chosen": 1604,
+      "fullMatchAnywhere": 214,
+      "colocationPossible": 14
+    },
+    {
+      "id": 20,
+      "name": "陈宫·择主",
+      "chosen": 1142,
+      "fullMatchAnywhere": 291,
+      "colocationPossible": 24
+    },
+    {
+      "id": 21,
+      "name": "徐庶·孝义",
+      "chosen": 977,
+      "fullMatchAnywhere": 248,
+      "colocationPossible": 23
+    },
+    {
+      "id": 22,
+      "name": "张辽·止啼",
+      "chosen": 161,
+      "fullMatchAnywhere": 234,
+      "colocationPossible": 291
+    },
+    {
+      "id": 23,
+      "name": "甘宁·先锋",
+      "chosen": 882,
+      "fullMatchAnywhere": 190,
+      "colocationPossible": 14
+    },
+    {
+      "id": 24,
+      "name": "荀攸·隐策",
+      "chosen": 810,
+      "fullMatchAnywhere": 23,
+      "colocationPossible": 27
+    }
+  ],
+  "scoreHistogram": {
+    "自我觉察": [
+      1598,
+      8224,
+      10360,
+      1320,
+      98
+    ],
+    "情绪调节": [
+      4958,
+      6973,
+      6244,
+      2876,
+      549
+    ],
+    "延迟满足": [
+      886,
+      8619,
+      11019,
+      1036,
+      40
+    ],
+    "关系模式": [
+      777,
+      7832,
+      12471,
+      520,
+      0
+    ],
+    "不确定性容忍": [
+      4723,
+      7037,
+      6389,
+      2894,
+      557
+    ],
+    "自我叙事": [
+      1277,
+      8099,
+      11220,
+      1003,
+      1
+    ]
+  }
+}
