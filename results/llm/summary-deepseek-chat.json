@@ -1,0 +1,71 @@
+{
+  "model": "deepseek-chat",
+  "servedModels": [
+    "deepseek-flash"
+  ],
+  "files": 60,
+  "baseline": {
+    "markerStrictOk": 0.9666666666666667,
+    "problems": {
+      "CARD 人物不在 24 人表": 1
+    },
+    "personaStableAcrossRuns": 0.4,
+    "scoresIdenticalAcrossRuns": 0,
+    "meanPairwiseScoreDiff": 0.43333333333333335,
+    "personaAgreeWithEngine": 0.10344827586206896,
+    "scoreExactAgreeWithEngine": 0.35,
+    "meanAbsDiffVsEngine": 0.8222222222222222,
+    "fullMatchHitWhereAvailable": 0.16666666666666666,
+    "llmChoiceMeanRatio": 0.4655172413793104,
+    "llmChoiceFullMatch": 0.06896551724137931
+  },
+  "engine": {
+    "mentionsEnginePersona": 0.9666666666666667,
+    "leakedMarkers": 0,
+    "mentionsOtherPersona": 0.06666666666666667
+  },
+  "citation": {
+    "baseline": {
+      "star-in-palace": {
+        "n": 98,
+        "wrong": 0
+      },
+      "mutagen": {
+        "n": 238,
+        "wrong": 1
+      },
+      "brightness": {
+        "n": 525,
+        "wrong": 3
+      }
+    },
+    "engine": {
+      "star-in-palace": {
+        "n": 176,
+        "wrong": 1
+      },
+      "mutagen": {
+        "n": 272,
+        "wrong": 0
+      },
+      "brightness": {
+        "n": 448,
+        "wrong": 1
+      }
+    }
+  },
+  "length": {
+    "baseline": {
+      "chars": 1759.4333333333334,
+      "completionTokens": 1259.7,
+      "latencyMs": 8193.833333333334,
+      "truncated": 0
+    },
+    "engine": {
+      "chars": 1731.1,
+      "completionTokens": 1256.0666666666666,
+      "latencyMs": 8610.733333333334,
+      "truncated": 0
+    }
+  }
+}

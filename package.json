@@ -4,12 +4,19 @@
   "private": true,
   "description": "命理鉴心：紫微斗数六维分与人物匹配的确定性引擎、测试与分布评测",
   "type": "module",
-  "engines": { "node": ">=22.18" },
+  "engines": {
+    "node": ">=22.18"
+  },
   "scripts": {
     "test": "node --test \"test/**/*.test.ts\"",
-    "simulate": "node scripts/simulate.ts"
+    "simulate": "node scripts/simulate.ts",
+    "llm:run": "NODE_USE_ENV_PROXY=1 node scripts/llm/run.ts",
+    "llm:analyze": "node scripts/llm/analyze.ts"
   },
-  "repository": { "type": "git", "url": "git+https://github.com/huangmao-gif/mingli-bench.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huangmao-gif/mingli-bench.git"
+  },
   "license": "CC-BY-NC-4.0",
   "dependencies": {
     "iztro": "2.5.8"
