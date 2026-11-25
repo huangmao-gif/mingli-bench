@@ -463,6 +463,16 @@ function toStar(s) {
     mutagen: s.mutagen && MUTAGENS.has(s.mutagen) ? s.mutagen : null
   };
 }
+var STEM_TABLE = null;
+function getStemTable(astrolabe) {
+  if (STEM_TABLE) return STEM_TABLE;
+  const t = {};
+  for (let y = 2024; y < 2034; y++) {
+    const x = astrolabe.horoscope(`${y}-6-1`).yearly;
+    t[x.heavenlyStem] = { \u7984: x.mutagen[0], \u6743: x.mutagen[1], \u79D1: x.mutagen[2], \u5FCC: x.mutagen[3] };
+  }
+  return STEM_TABLE = t;
+}
 function fromIztro(astrolabe, refDate) {
   let layers;
   if (refDate) {
@@ -474,11 +484,7 @@ function fromIztro(astrolabe, refDate) {
     });
     layers = [layer("\u5927\u9650", h.decadal), layer("\u6D41\u5E74", h.yearly)];
   }
-  const stemTable = {};
-  for (let y = 2024; y < 2034; y++) {
-    const x = astrolabe.horoscope(`${y}-6-1`).yearly;
-    stemTable[x.heavenlyStem] = { \u7984: x.mutagen[0], \u6743: x.mutagen[1], \u79D1: x.mutagen[2], \u5FCC: x.mutagen[3] };
-  }
+  const stemTable = getStemTable(astrolabe);
   return {
     ...layers ? { layers } : {},
     stemTable,

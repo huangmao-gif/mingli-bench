@@ -21,6 +21,19 @@ function toStar(s: { name: string; type: string; brightness?: string; mutagen?: 
   };
 }
 
+// 十天干四化表与命盘无关，全局只算一次（取排盘库自己的四化表，连续十年覆盖全部十个天干）
+let STEM_TABLE: Record<string, Record<Mutagen, string>> | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getStemTable(astrolabe: any): Record<string, Record<Mutagen, string>> {
+  if (STEM_TABLE) return STEM_TABLE;
+  const t: Record<string, Record<Mutagen, string>> = {};
+  for (let y = 2024; y < 2034; y++) {
+    const x = astrolabe.horoscope(`${y}-6-1`).yearly;
+    t[x.heavenlyStem] = { 禄: x.mutagen[0], 权: x.mutagen[1], 科: x.mutagen[2], 忌: x.mutagen[3] };
+  }
+  return (STEM_TABLE = t);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function fromIztro(astrolabe: any, refDate?: string): Chart {
   let layers: MutagenLayer[] | undefined;
@@ -31,12 +44,7 @@ export function fromIztro(astrolabe: any, refDate?: string): Chart {
     });
     layers = [layer('大限', h.decadal), layer('流年', h.yearly)];
   }
-  // 十年覆盖全部十个天干，用排盘库自己的四化表
-  const stemTable: Record<string, Record<Mutagen, string>> = {};
-  for (let y = 2024; y < 2034; y++) {
-    const x = astrolabe.horoscope(`${y}-6-1`).yearly;
-    stemTable[x.heavenlyStem] = { 禄: x.mutagen[0], 权: x.mutagen[1], 科: x.mutagen[2], 忌: x.mutagen[3] };
-  }
+  const stemTable = getStemTable(astrolabe);
   return {
     ...(layers ? { layers } : {}),
     stemTable,
