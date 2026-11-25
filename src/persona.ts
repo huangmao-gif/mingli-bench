@@ -1,6 +1,6 @@
 // 24 三国人物匹配：把产品提示词里的 PERSONA_MAPPING 改写成可执行条件。
 // 原文措辞的解读规则（星曜组合看命宫三方四正、「庙旺 / 化X」修饰紧邻的前一颗星等）见 docs/RULES.md。
-import type { Chart, Mutagen, Palace, PalaceName, PersonaResult } from './types.ts';
+import type { Chart, Mutagen, Palace, PalaceName, PersonaResult, RulesVersion } from './types.ts';
 import {
   SIX_SHA, STRONG_BRIGHT, bodyPalace, hasMutagen, hasStar, isStrongPalace, isWeakPalace, opposite, palace,
   sanFangSiZheng,
@@ -24,6 +24,8 @@ export interface PersonaRule {
   /** 原提示词条文，保留以便对照 */
   source: string;
   clauses: Clause[];
+  /** v2：前 core 条为核心条件（原文第一个逗号前的星曜组合），其余为辅助条件 */
+  core?: number;
 }
 
 // ---- 条件构造器 ----
@@ -140,21 +142,53 @@ export function evaluatePersona(chart: Chart, rule: PersonaRule): { matched: str
   return { matched, unmatched };
 }
 
+// ---------------- v2 修订提案 ----------------
+// 1) 每条规则拆成「核心条件」（原文第一个逗号前的星曜组合）与「辅助条件」；先比核心是否全满足，再比整体满足率。
+// 2) 刘备：原条件「紫微+天同/太阴化科」在三方四正内不可能同时成立（docs/RULES.md 第三节），改为
+//    「天同或太阴化科坐命/身 + 左辅或右弼（人和）」为核心，「兄弟或交友宫旺」为辅助。
+const CORE_COUNTS: Record<number, number> = {
+  1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 2, 8: 2, 9: 2, 10: 3, 11: 1, 12: 3,
+  13: 3, 14: 2, 15: 2, 16: 2, 17: 3, 18: 2, 19: 3, 20: 3, 21: 3, 22: 2, 23: 3, 24: 3,
+};
+
+export const PERSONA_RULES_V2: PersonaRule[] = PERSONA_RULES.map((r) =>
+  r.id === 7
+    ? {
+        id: 7, name: '刘备·仁德', source: '【v2 提案】天同/太阴化科坐命或身 + 左辅/右弼，兄弟或交友宫旺', core: 2,
+        clauses: [
+          { desc: '天同或太阴化科坐命宫或身宫', test: (c) => hasStar([c.p('命宫'), bodyPalace(c.chart)], ['天同', '太阴'], { mutagen: '科' }) },
+          inSF(['左辅', '右弼']),
+          any('兄弟或交友宫旺', strong('兄弟'), strong('交友')),
+        ],
+      }
+    : { ...r, core: CORE_COUNTS[r.id] },
+);
+
+export function rulesFor(version: RulesVersion): PersonaRule[] {
+  return version === 'v2' ? PERSONA_RULES_V2 : PERSONA_RULES;
+}
+
 /**
- * 选人物：按「满足条件比例」降序；比例相同按条件数多者优先（更具体）；再相同按编号小者优先。
+ * 选人物。
+ * v1：按「满足条件比例」降序；比例相同按条件数多者优先（更具体）；再相同按编号小者优先。
+ * v2：先按「核心条件是否全满足」，再按 v1 的顺序。
  * 永远返回一个人物，并给出未满足的条件，便于判断是否「勉强匹配」。
  */
-export function matchPersona(chart: Chart): PersonaResult {
-  const ranked = PERSONA_RULES.map((r) => {
+export function matchPersona(chart: Chart, version: RulesVersion = 'v1'): PersonaResult {
+  const rules = rulesFor(version);
+  const ranked = rules.map((r) => {
     const e = evaluatePersona(chart, r);
-    return { rule: r, ...e, ratio: e.matched.length / r.clauses.length };
-  }).sort((a, b) => b.ratio - a.ratio || b.rule.clauses.length - a.rule.clauses.length || a.rule.id - b.rule.id);
+    const coreN = r.core ?? 0;
+    const coreOk = version === 'v2' ? r.clauses.slice(0, coreN).every((cl) => e.matched.includes(cl.desc)) : false;
+    return { rule: r, ...e, ratio: e.matched.length / r.clauses.length, coreOk };
+  }).sort((a, b) => Number(b.coreOk) - Number(a.coreOk) || b.ratio - a.ratio || b.rule.clauses.length - a.rule.clauses.length || a.rule.id - b.rule.id);
   const top = ranked[0];
   return {
     id: top.rule.id,
     name: top.rule.name,
     matchRatio: Number(top.ratio.toFixed(3)),
     fullMatch: top.unmatched.length === 0,
+    ...(version === 'v2' ? { coreMatch: top.coreOk } : {}),
     matched: top.matched,
     unmatched: top.unmatched,
     runnersUp: ranked.slice(1, 4).map((x) => ({ id: x.rule.id, name: x.rule.name, matchRatio: Number(x.ratio.toFixed(3)) })),

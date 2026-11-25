@@ -170,7 +170,7 @@ const b = summary.baseline as Record<string, number>;
 const e = summary.engine as Record<string, number>;
 out.push('# LLM 评测结果', '');
 out.push(`模型：请求 \`${MODEL}\`，服务端实际返回 \`${(summary.servedModels as string[]).join(', ')}\`。共 ${raws.length} 份报告（${byChart.size} 张盘 × 2 组 × ${base.length / (byChart.size || 1)} 次）。参数与线上一致：只设 max_tokens=4000，不设 temperature / seed。`, '');
-out.push('- **baseline**：线上精简报告提示词，LLM 自己打六维分、选人物，输出 SCORES/CARD 标记。');
+out.push(MODEL.endsWith('-prodtext') ? '- **baseline（线上复现）**：线上免费档提示词 + 线上前端的命盘文本（无亮度、杂曜、大限），LLM 自己打六维分、选人物，输出 SCORES/CARD 标记。' : '- **baseline**：存档中 lite.js 的精简提示词（与线上 profile-b.js / free.js 共用同一套打分与人物规则），LLM 自己打六维分、选人物，输出 SCORES/CARD 标记。');
 out.push('- **engine**：同样的报告结构，六维分与人物由确定性引擎给出，LLM 只写解读。', '');
 out.push('## 1. baseline：格式合规与一致性', '', '| 指标 | 结果 |', '|---|---|');
 out.push(`| SCORES/CARD 严格合规（各一个、合法 JSON、6 维 1-5、人物在表内） | ${pct(okN, base.length)}（${okN}/${base.length}） |`);

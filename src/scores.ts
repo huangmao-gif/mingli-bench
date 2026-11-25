@@ -1,6 +1,6 @@
 // 六维分：把产品提示词里的 SCORES_RUBRIC 改写成确定性规则。
 // 判定细则与取舍见 docs/RULES.md。
-import type { Chart, DimScore, Evidence, Palace, PalaceName, ScoreDim } from './types.ts';
+import type { Chart, DimScore, Evidence, Palace, PalaceName, RulesVersion, ScoreDim } from './types.ts';
 import { SCORE_DIMS } from './types.ts';
 import {
   AUX_GOOD, FOUR_SHA, STRONG_BRIGHT, bodyPalace, findMutagen, findStars, majors, opposite, palace, trines,
@@ -58,6 +58,38 @@ export function scorePalace(chart: Chart, p: Palace): { score: number; positive:
   return { score, positive, negative };
 }
 
+/**
+ * v2 修订提案（候选方案 C，选型依据见 docs/RULES-v2.md）：让分数分布以 3 为中心、两端都有。
+ * 正面（累加，封顶 +2）：本宫有化禄/化权/化科 +1；本宫有六吉或禄存 +1；主星庙旺且本宫无任何负面信号 +1（庙旺无煞）。
+ * 负面（累加，封顶 −2）：四煞坐宫 −1；化忌坐宫 −1；空劫坐宫 −1；化忌在对宫冲照 −1。
+ * 与 v1 的区别：v1 要「庙旺且禄科同宫」才 +2，而四煞在对宫、化忌在三合都扣分，导致负面信号远多于正面。
+ */
+export function scorePalaceV2(chart: Chart, p: Palace): { score: number; positive: Evidence[]; negative: Evidence[] } {
+  const positive: Evidence[] = [];
+  const negative: Evidence[] = [];
+
+  const opp = opposite(chart, p);
+  const sha = findStars([p], FOUR_SHA);
+  if (sha.length) negative.push(ev(p, `${sha.map((x) => x.star.name).join('、')}坐宫`));
+  const ji = findMutagen([p], '忌');
+  if (ji.length) negative.push(ev(p, `${ji.map((x) => x.star.name).join('、')}化忌坐宫`));
+  const kj = findStars([p], ['地空', '地劫']);
+  if (kj.length) negative.push(ev(p, `${kj.map((x) => x.star.name).join('、')}坐宫`));
+  const jiOpp = findMutagen([opp], '忌');
+  if (jiOpp.length) negative.push(ev(p, `${jiOpp.map((x) => x.star.name).join('、')}化忌在${opp.name}冲照`));
+  const neg = Math.min(2, negative.length);
+
+  const huaGood = p.stars.filter((s) => s.mutagen === '禄' || s.mutagen === '权' || s.mutagen === '科');
+  if (huaGood.length) positive.push(ev(p, huaGood.map((s) => s.name + '化' + s.mutagen).join('、')));
+  const aux = findStars([p], AUX_GOOD);
+  if (aux.length) positive.push(ev(p, `辅星${aux.map((x) => x.star.name).join('、')}`));
+  const strongMajors = majors(p).filter((s) => STRONG_BRIGHT.includes(s.brightness));
+  if (strongMajors.length && negative.length === 0) positive.push(ev(p, `主星${strongMajors.map((s) => s.name + s.brightness).join('、')}且无煞忌`));
+  const pos = Math.min(2, positive.length);
+
+  return { score: Math.max(1, Math.min(5, 3 + pos - neg)), positive, negative };
+}
+
 /** 多宫合并：取平均；恰好 .5 时向 3 靠拢（对应原规则「不确定时一律给 3 分」） */
 export function combine(scores: number[]): 1 | 2 | 3 | 4 | 5 {
   const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
@@ -68,7 +100,8 @@ export function combine(scores: number[]): 1 | 2 | 3 | 4 | 5 {
   return Math.max(1, Math.min(5, r)) as 1 | 2 | 3 | 4 | 5;
 }
 
-export function computeScores(chart: Chart): Record<ScoreDim, DimScore> {
+export function computeScores(chart: Chart, version: RulesVersion = 'v1'): Record<ScoreDim, DimScore> {
+  const scoreOne = version === 'v2' ? scorePalaceV2 : scorePalace;
   const out = {} as Record<ScoreDim, DimScore>;
   for (const dim of SCORE_DIMS) {
     const ps: Palace[] = [];
@@ -76,7 +109,7 @@ export function computeScores(chart: Chart): Record<ScoreDim, DimScore> {
       const p = n === '身宫' ? bodyPalace(chart) : palace(chart, n);
       if (!ps.includes(p)) ps.push(p); // 身命同宫时只算一次
     }
-    const perPalace = ps.map((p) => ({ palace: p.name, ...scorePalace(chart, p) }));
+    const perPalace = ps.map((p) => ({ palace: p.name, ...scoreOne(chart, p) }));
     out[dim] = {
       score: combine(perPalace.map((x) => x.score)),
       palaces: ps.map((p) => p.name),

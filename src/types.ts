@@ -42,6 +42,9 @@ export interface Chart {
   stemTable?: Record<string, Record<Mutagen, string>>;
 }
 
+/** 规则表版本：v1 = 线上提示词原文的忠实实现；v2 = 修订提案（见 docs/RULES-v2.md） */
+export type RulesVersion = 'v1' | 'v2';
+
 export const SCORE_DIMS = [
   '自我觉察', '情绪调节', '延迟满足', '关系模式', '不确定性容忍', '自我叙事',
 ] as const;
@@ -66,6 +69,8 @@ export interface PersonaResult {
   /** 满足的条件数 / 总条件数 */
   matchRatio: number;
   fullMatch: boolean;
+  /** v2：核心条件（星曜组合）是否全部满足；v1 不提供 */
+  coreMatch?: boolean;
   matched: string[];
   unmatched: string[];
   /** 得分最高的前几名，便于解释与排查 */

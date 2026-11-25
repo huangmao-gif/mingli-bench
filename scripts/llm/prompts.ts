@@ -1,6 +1,8 @@
 // 两组提示词。
-// baseline：命理鉴心线上「精简报告」提示词（prompts/lite.js），LLM 自己打六维分、选人物，并输出 SCORES/CARD 标记。
-//   与线上版本的差异：去掉了「问卷交叉验证」一节（评测不带问卷）；命盘数据改放在 user 消息里。
+// baseline：命理鉴心存档中的「精简」提示词（prompts/lite.js），LLM 自己打六维分、选人物，并输出 SCORES/CARD 标记。
+//   注意：lite.js 在存档里已导出，但线上生成路径实际用的是 profile-b.js（精简档）与 free.js（免费档）；
+//   三者共用同一套打分锚点、人物映射与标记规则。线上免费档的忠实复现见 prompt-free-prod.ts。
+//   与 lite.js 原文的差异：去掉了「问卷交叉验证」一节（评测不带问卷）；命盘数据改放在 user 消息里。
 // engine：同样的报告结构，但六维分与人物由确定性引擎给出，LLM 只写解读。
 
 export const SCORES_RUBRIC = `【SCORES 打分锚点 — 必须遵守】

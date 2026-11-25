@@ -53,7 +53,7 @@ for (const model of models) {
   rows.push(r);
 }
 
-const md: string[] = ['# 跨模型对比（baseline 第 1 次运行）', '', '同一批 10 张盘、同一份线上精简提示词。DeepSeek 通过 API 调用；Claude 两个模型通过 Claude Code 子代理生成（带子代理自身的系统提示，条件与 API 调用不完全相同，见 README）。', ''];
+const md: string[] = ['# 跨模型对比（baseline 第 1 次运行）', '', '同一批 10 张盘。`-prodtext` 为线上免费档的忠实复现（免费档提示词 + 线上前端的命盘文本）；其余各组用存档中 lite.js 的精简提示词 + 信息更全的命盘文本。DeepSeek 通过 API 调用；Claude 两个模型通过 Claude Code 子代理生成（带子代理自身的系统提示，条件与 API 调用不完全相同，见 README）。', ''];
 md.push(`| 指标 | ${rows.map((r) => r.model).join(' | ')} |`, `|---|${rows.map(() => '---').join('|')}|`);
 const line = (label: string, f: (r: Row) => string) => md.push(`| ${label} | ${rows.map(f).join(' | ')} |`);
 line('报告数', (r) => String(r.n));

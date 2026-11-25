@@ -10,7 +10,8 @@ const RUNS = Number(arg('--runs', '3'));
 const MODEL = arg('--model', 'deepseek-chat');
 const KEY = process.env.DEEPSEEK_API_KEY;
 if (!KEY) throw new Error('需要环境变量 DEEPSEEK_API_KEY');
-const OUT = `results/llm/raw/${MODEL}`;
+const PROD = process.argv.includes('--prodtext'); // 用线上前端的命盘文本格式
+const OUT = `results/llm/raw/${MODEL}${PROD ? '-prodtext' : ''}`;
 mkdirSync(OUT, { recursive: true });
 
 async function call(system: string, user: string) {
@@ -20,8 +21,8 @@ async function call(system: string, user: string) {
       const r = await fetch('https://api.deepseek.com/chat/completions', {
         method: 'POST',
         headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' },
-        // 与线上一致：只设 max_tokens（精简档 4000），不设 temperature / seed
-        body: JSON.stringify({ model: MODEL, max_tokens: 4000, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] }),
+        // 只设 max_tokens（评测组 4000；线上复现组按免费档 3000），不设 temperature / seed，与线上一致
+        body: JSON.stringify({ model: MODEL, max_tokens: PROD ? 3000 : 4000, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] }),
         signal: AbortSignal.timeout(300_000),
       });
       const j = await r.json();
@@ -36,7 +37,7 @@ async function call(system: string, user: string) {
 
 const sha = (s: string) => createHash('sha256').update(s).digest('hex').slice(0, 12);
 const jobs: (() => Promise<void>)[] = [];
-for (const job of buildJobs(RUNS)) {
+for (const job of buildJobs(RUNS, RUNS, { prodText: PROD })) {
   const file = `${OUT}/${job.chart.id}-${job.cond}-${job.run}.json`;
   if (existsSync(file)) continue;
   jobs.push(async () => {

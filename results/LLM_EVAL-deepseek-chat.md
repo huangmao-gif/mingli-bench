@@ -2,7 +2,7 @@
 
 模型：请求 `deepseek-chat`，服务端实际返回 `deepseek-flash`。共 60 份报告（10 张盘 × 2 组 × 3 次）。参数与线上一致：只设 max_tokens=4000，不设 temperature / seed。
 
-- **baseline**：线上精简报告提示词，LLM 自己打六维分、选人物，输出 SCORES/CARD 标记。
+- **baseline**：存档中 lite.js 的精简提示词（与线上 profile-b.js / free.js 共用同一套打分与人物规则），LLM 自己打六维分、选人物，输出 SCORES/CARD 标记。
 - **engine**：同样的报告结构，六维分与人物由确定性引擎给出，LLM 只写解读。
 
 ## 1. baseline：格式合规与一致性
