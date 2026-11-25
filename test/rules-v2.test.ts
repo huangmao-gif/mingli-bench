@@ -43,3 +43,17 @@ test('computeScores 默认仍为 v1', () => {
   assert.equal(computeScores(c).自我觉察.score, 3);
   assert.equal(computeScores(c, 'v2').自我觉察.score, 4);
 });
+
+test('v2 性质：选中人物的核心条件满足比例是所有人物里最高的（200 张真实盘）', async () => {
+  const { chartBySolar } = await import('../src/normalize.ts');
+  const coreRatio = (c: Parameters<typeof evaluatePersona>[0], r: (typeof PERSONA_RULES_V2)[number]) => {
+    const e = evaluatePersona(c, r);
+    return r.clauses.slice(0, r.core).filter((cl) => e.matched.includes(cl.desc)).length / r.core!;
+  };
+  for (let i = 0; i < 200; i++) {
+    const c = chartBySolar(`${1950 + (i % 60)}-${1 + ((i * 5) % 12)}-${1 + ((i * 7) % 28)}`, i % 12, '女');
+    const pick = matchPersona(c, 'v2');
+    const best = Math.max(...PERSONA_RULES_V2.map((r) => coreRatio(c, r)));
+    assert.equal(coreRatio(c, PERSONA_RULES_V2.find((r) => r.id === pick.id)!), best);
+  }
+});

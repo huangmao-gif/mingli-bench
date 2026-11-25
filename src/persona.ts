@@ -171,7 +171,7 @@ export function rulesFor(version: RulesVersion): PersonaRule[] {
 /**
  * 选人物。
  * v1：按「满足条件比例」降序；比例相同按条件数多者优先（更具体）；再相同按编号小者优先。
- * v2：先按「核心条件是否全满足」，再按 v1 的顺序。
+ * v2：先按「核心条件是否全满足」，再按「核心条件满足比例」（没有人物核心全满足时，避免条件少的规则凭辅助条件胜出），再按 v1 的顺序。
  * 永远返回一个人物，并给出未满足的条件，便于判断是否「勉强匹配」。
  */
 export function matchPersona(chart: Chart, version: RulesVersion = 'v1'): PersonaResult {
@@ -179,9 +179,11 @@ export function matchPersona(chart: Chart, version: RulesVersion = 'v1'): Person
   const ranked = rules.map((r) => {
     const e = evaluatePersona(chart, r);
     const coreN = r.core ?? 0;
-    const coreOk = version === 'v2' ? r.clauses.slice(0, coreN).every((cl) => e.matched.includes(cl.desc)) : false;
-    return { rule: r, ...e, ratio: e.matched.length / r.clauses.length, coreOk };
-  }).sort((a, b) => Number(b.coreOk) - Number(a.coreOk) || b.ratio - a.ratio || b.rule.clauses.length - a.rule.clauses.length || a.rule.id - b.rule.id);
+    const coreHit = version === 'v2' ? r.clauses.slice(0, coreN).filter((cl) => e.matched.includes(cl.desc)).length : 0;
+    const coreOk = version === 'v2' && coreHit === coreN;
+    const coreRatio = version === 'v2' ? coreHit / coreN : 0;
+    return { rule: r, ...e, ratio: e.matched.length / r.clauses.length, coreOk, coreRatio };
+  }).sort((a, b) => Number(b.coreOk) - Number(a.coreOk) || b.coreRatio - a.coreRatio || b.ratio - a.ratio || b.rule.clauses.length - a.rule.clauses.length || a.rule.id - b.rule.id);
   const top = ranked[0];
   return {
     id: top.rule.id,

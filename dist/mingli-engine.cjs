@@ -430,9 +430,11 @@ function matchPersona(chart, version = "v1") {
   const ranked = rules.map((r) => {
     const e = evaluatePersona(chart, r);
     const coreN = r.core ?? 0;
-    const coreOk = version === "v2" ? r.clauses.slice(0, coreN).every((cl) => e.matched.includes(cl.desc)) : false;
-    return { rule: r, ...e, ratio: e.matched.length / r.clauses.length, coreOk };
-  }).sort((a, b) => Number(b.coreOk) - Number(a.coreOk) || b.ratio - a.ratio || b.rule.clauses.length - a.rule.clauses.length || a.rule.id - b.rule.id);
+    const coreHit = version === "v2" ? r.clauses.slice(0, coreN).filter((cl) => e.matched.includes(cl.desc)).length : 0;
+    const coreOk = version === "v2" && coreHit === coreN;
+    const coreRatio = version === "v2" ? coreHit / coreN : 0;
+    return { rule: r, ...e, ratio: e.matched.length / r.clauses.length, coreOk, coreRatio };
+  }).sort((a, b) => Number(b.coreOk) - Number(a.coreOk) || b.coreRatio - a.coreRatio || b.ratio - a.ratio || b.rule.clauses.length - a.rule.clauses.length || a.rule.id - b.rule.id);
   const top = ranked[0];
   return {
     id: top.rule.id,
